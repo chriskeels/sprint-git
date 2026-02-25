@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:15
+    container_name: brightpath-db
+    restart: always
+    environment:
+      POSTGRES_USER: brightpath_user
+      POSTGRES_PASSWORD: brightpath_password
+      POSTGRES_DB: brightpath_db
+    volumes:
+      - brightpath-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U brightpath_user -d brightpath_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: brightpath-app
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://brightpath_user:brightpath_password@db:5432/brightpath_db
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
+volumes:
+  brightpath-data:
