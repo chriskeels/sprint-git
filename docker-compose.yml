@@ -3,6 +3,7 @@ services:
     image: postgres:15
     container_name: brightpath-db
     restart: always
+
     environment:
       POSTGRES_USER: brightpath_user
       POSTGRES_PASSWORD: brightpath_password
@@ -18,15 +19,20 @@ services:
   app:
     build: .
     container_name: brightpath-app
+    restart: always 
     ports:
       - "3000:3000"
-    environment:
-      DATABASE_URL: postgres://brightpath_user:brightpath_password@db:5432/brightpath_db
-      NODE_ENV: production
+    env_file:
+      - .env.production
     depends_on:
       db:
         condition: service_healthy
-    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:3000 || exit 1"]
+      interval: 10s
+      timeout: 5s 
+      retries: 5  
+      start_period: 10s
 
 volumes:
   brightpath-data:
