@@ -54,22 +54,22 @@ docker compose ps
 - **Operational efficiency:** With `docker compose up` a developer or operator can start the full environment with one command. This reduces setup time and support overhead.
 
 ## Screenshot
-Capture a screenshot showing both services running healthy after starting the stack.
+Both services running healthy after starting the stack:
 
-Example commands to run before capturing the screenshot:
+![Services healthy](.github/screenshots/services-healthy.png)
+
+**How to verify:** Run the following commands to see healthy status:
 
 ```bash
 docker compose up -d
 docker compose ps
-docker compose logs --tail=50 app
-docker compose logs --tail=50 db
 ```
 
-Place the screenshot at `.github/screenshots/services-healthy.png` and add it to the repo so others can see the expected healthy status. Example markdown to embed the image:
-
-```markdown
-![Services healthy](.github/screenshots/services-healthy.png)
-```
+Expected output:
+- ✓ Network sprint2-lab-default Created
+- ✓ Volume sprint2-lab-brightpath-data Created
+- ✓ Container brightpath-db Healthy
+- ✓ Container brightpath-app Created
 
 ## Why orchestration matters for educational apps
 - Educational apps must be highly reliable: downtime directly affects student learning and teacher workflows.
