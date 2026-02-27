@@ -3,10 +3,12 @@ name: Basic CI Checks
 on:
   push:
     branches:
+      - feature/docker-setup
       - main
   pull_request:
     branches:
       - main
+      - feature/docker-setup
 
 jobs:
   lint-and-test:
