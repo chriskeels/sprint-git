@@ -3,15 +3,18 @@ services:
     image: postgres:15
     container_name: brightpath-db
     restart: always
-
+    env_file:
+      - .env.production
     environment:
-      POSTGRES_USER: brightpath_user
-      POSTGRES_PASSWORD: brightpath_password
-      POSTGRES_DB: brightpath_db
+      POSTGRES_USER: ${POSTGRES_USER:-brightpath_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-brightpath_password}
+      POSTGRES_DB: ${POSTGRES_DB:-brightpath_db}
     volumes:
       - brightpath-data:/var/lib/postgresql/data
+    networks:
+      - brightpath-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U brightpath_user -d brightpath_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-brightpath_user} -d ${POSTGRES_DB:-brightpath_db}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -27,6 +30,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - brightpath-network
     healthcheck:
       test: ["CMD-SHELL", "wget --spider -q http://localhost:3000 || exit 1"]
       interval: 10s
@@ -36,3 +41,7 @@ services:
 
 volumes:
   brightpath-data:
+
+networks:
+  brightpath-network:
+    driver: bridge
