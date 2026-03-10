@@ -1,31 +1,51 @@
-name: Basic CI Checks
+name: CI/CD
 
 on:
   push:
-    branches:
-      - feature/docker-setup
-      - main
+    branches: [main, develop]
   pull_request:
-    branches:
-      - main
-      - feature/docker-setup
+    branches: [main]
 
 jobs:
-  lint-and-test:
-    name: Lint and Test
+  # ── JOB 1: always runs ──────────────────────────────
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build containers
+        run: docker compose build
+      - name: Start services
+        run: docker compose up -d
+      - name: Wait for database
+        run: sleep 15
+      - name: Run migrations
+        run: docker compose exec -T app npx prisma migrate deploy
+      - name: Run tests
+        run: docker compose exec -T app npm test
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+
+  # ── JOB 2: only runs on main, only if Job 1 passed ──
+  deploy:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v4
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
         with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Run Linter
-        run: npm run lint
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            if [ ! -d ~/my-app ]; then
+              git clone https://github.com/chriskeels/sprint-git.git ~/my-app
+            fi
+            cd ~/my-app && git pull origin main
+            docker compose down
+            docker compose up --build -d
+            docker compose exec app npx prisma migrate deploy
