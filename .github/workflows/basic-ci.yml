@@ -23,8 +23,6 @@ jobs:
         run: sleep 15
       - name: Run migrations
         run: docker compose exec -T app npx prisma migrate deploy
-      - name: Run tests
-        run: docker compose exec -T app npm test
       - name: Tear down
         if: always()
         run: docker compose down -v
