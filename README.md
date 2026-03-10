@@ -1,5 +1,7 @@
 # BrightPath Tutoring
 
+[![Basic CI Checks](https://github.com/chriskeels/sprint-git/actions/workflows/basic-ci.yml/badge.svg)](https://github.com/chriskeels/sprint-git/actions/workflows/basic-ci.yml)
+
 ## Project Overview
 BrightPath Tutoring helps middle- and high-school Associates with math and science through an online app where Associates log in, watch videos, take quizzes, and track progress. This repository contains the app plus Docker orchestration for local and CI-based deployments.
 
