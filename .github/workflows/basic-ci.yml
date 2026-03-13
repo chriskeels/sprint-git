@@ -49,6 +49,6 @@ jobs:
               git clone https://github.com/chriskeels/sprint-git.git ~/my-app
             fi
             cd ~/my-app && git pull origin main
-            docker compose down
-            docker compose up --build -d
-            docker compose exec app npx prisma migrate deploy
+            sudo docker compose down
+            sudo docker compose up --build -d
+            sudo docker compose exec -T app npx prisma migrate deploy
