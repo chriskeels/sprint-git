@@ -19,7 +19,7 @@ services:
     build: .
     container_name: brightpath-app
     ports:
-      - "3000:3000"
+      - "80:3000"
     environment:
       DATABASE_URL: postgres://brightpath_user:brightpath_password@db:5432/brightpath_db
       NODE_ENV: production
