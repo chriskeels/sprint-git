@@ -1,22 +1,32 @@
 {
   "name": "sprint2-lab",
   "version": "1.0.0",
-  "description": "",
+  "description": "StackUp budgeting app with CI/CD-ready Next.js and Docker automation.",
   "main": "index.js",
   "scripts": {
-    "build": "next build"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:init": "node ./lib/db-init.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.19.2",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.3.1",
+    "jsonwebtoken": "^9.0.3",
     "next": "^16.1.6",
+    "openai": "^6.29.0",
+    "pg": "^8.20.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "prisma": "^6.19.2"
+    "@types/node": "25.5.0",
+    "@types/react": "19.2.14",
+    "prisma": "^6.19.2",
+    "typescript": "5.9.3"
   }
 }

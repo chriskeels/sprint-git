@@ -1,0 +1,156 @@
+.page { animation: fadeUp 0.4s ease; }
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.header h1 { font-size: 1.8rem; }
+.sub { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+
+.addBtn {
+  background: var(--green);
+  color: #000;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 11px 20px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+.addBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.form {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  margin-bottom: 24px;
+  animation: fadeUp 0.3s ease;
+}
+
+.formTitle { font-size: 1.1rem; margin-bottom: 20px; }
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.typeToggle {
+  display: flex;
+  gap: 8px;
+  grid-column: 1 / -1;
+}
+
+.typeBtn {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all var(--transition);
+}
+.expenseActive { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+.incomeActive { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.field input,
+.field select {
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 0.9rem;
+  transition: border-color var(--transition);
+}
+.field input:focus, .field select:focus { border-color: var(--green); }
+.field input::placeholder { color: var(--text-dim); }
+.field select option { background: var(--bg-card); }
+
+.submitBtn {
+  background: var(--green);
+  color: #000;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 12px 28px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+.submitBtn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.submitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filterSelect {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  color: var(--text);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.filterSelect option { background: var(--bg-card); }
+
+.skeleton { display: flex; flex-direction: column; gap: 10px; }
+.skeletonRow { height: 64px; background: linear-gradient(90deg, var(--bg-card) 25%, var(--border) 50%, var(--bg-card) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: var(--radius-sm); }
+
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+.empty p { font-size: 1.1rem; margin-bottom: 8px; }
+.empty span { font-size: 0.875rem; color: var(--text-dim); }
+
+.list { display: flex; flex-direction: column; gap: 8px; }
+
+.txRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  transition: all var(--transition);
+}
+.txRow:hover { border-color: var(--border-light); background: var(--bg-card-hover); }
+
+.txIcon { width: 40px; height: 40px; background: var(--bg); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+
+.txInfo { flex: 1; min-width: 0; }
+.txDesc { font-size: 0.9rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.txMeta { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; }
+
+.badge { padding: 2px 8px; border-radius: 100px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+.incomeBadge { background: var(--green-dim); color: var(--green); }
+.expenseBadge { background: var(--red-dim); color: var(--red); }
+
+.amount { font-size: 0.95rem; font-weight: 700; white-space: nowrap; }
+.income { color: var(--green); }
+.expense { color: var(--red); }
+
+.deleteBtn {
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all var(--transition);
+}
+.deleteBtn:hover { background: var(--red-dim); color: var(--red); }

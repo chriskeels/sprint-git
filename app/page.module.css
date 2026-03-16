@@ -1,0 +1,180 @@
+.main {
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.noise {
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 40px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-family: "Syne", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+}
+.logo span { color: var(--green); }
+
+.navLinks { display: flex; gap: 12px; align-items: center; }
+
+.loginLink {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition);
+}
+.loginLink:hover { color: var(--text); }
+
+.ctaBtn {
+  background: var(--green);
+  color: #000;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  transition: opacity var(--transition), transform var(--transition);
+}
+.ctaBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.hero {
+  text-align: center;
+  padding: 80px 20px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.badge {
+  display: inline-block;
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid var(--green);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.headline {
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 1.0;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.accent {
+  color: var(--green);
+  text-shadow: var(--shadow-green);
+}
+
+.subtext {
+  max-width: 540px;
+  margin: 0 auto 36px;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.heroCtas {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 56px;
+}
+
+.primaryBtn {
+  background: var(--green);
+  color: #000;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 14px 28px;
+  border-radius: var(--radius);
+  transition: all var(--transition);
+  box-shadow: var(--shadow-green);
+}
+.primaryBtn:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,229,160,0.3); }
+
+.ghostBtn {
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 14px 28px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-light);
+  transition: all var(--transition);
+}
+.ghostBtn:hover { border-color: var(--green); color: var(--green); }
+
+.heroStats {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.stat span { font-size: 1.8rem; }
+.stat p { color: var(--text-muted); font-size: 0.85rem; font-weight: 500; }
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto 80px;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.featureCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  transition: all var(--transition);
+}
+.featureCard:hover {
+  border-color: var(--green);
+  background: var(--bg-card-hover);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-green);
+}
+
+.featureEmoji { font-size: 2rem; margin-bottom: 16px; }
+.featureCard h3 { font-size: 1.1rem; margin-bottom: 10px; color: var(--text); }
+.featureCard p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+
+.footer {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--border);
+}

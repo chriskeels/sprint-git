@@ -63,6 +63,35 @@ npm install
 npm run dev
 ```
 
+## CI/CD Automation
+This app is now wired for GitHub Actions automation in [.github/workflows/basic-ci.yml](.github/workflows/basic-ci.yml).
+
+What runs automatically:
+- Every push to `develop` or `main`: installs dependencies, initializes a Postgres service, builds the Next.js app, validates `docker-compose.yml`, and builds the Docker image.
+- Every pull request into `develop` or `main`: runs the same validation steps before merge.
+- Every push branch build (non-PR): publishes a versioned Docker image to GitHub Container Registry as `ghcr.io/<owner>/<repo>`.
+
+### Repository settings to finish the connection
+Add these repository settings in GitHub:
+
+1. **Actions permissions**
+  - Allow workflows to read and write packages so the pipeline can publish to GHCR.
+
+2. **Container registry access**
+  - Make sure your deployment platform can pull from `ghcr.io/<owner>/<repo>`.
+  - The workflow automatically publishes branch and SHA tags, plus `latest` on the default branch.
+
+### Runtime environment secrets for your deployed app
+Your hosting target still needs the real application environment variables:
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `OPENAI_API_KEY`
+- `OPENAI_MODEL` (optional)
+
+The CI workflow uses safe placeholder values for build-time checks, but production should use real secrets from your platform or secret manager.
+
+If your deployment platform supports webhooks or remote deploy commands, it can now consume the published GHCR image directly as the release artifact.
+
 ## Contributing
 - Open issues or PRs for bugs and features.
 - Keep changes small and add tests where applicable.

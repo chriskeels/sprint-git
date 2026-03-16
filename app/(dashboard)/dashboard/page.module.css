@@ -1,0 +1,143 @@
+.page { animation: fadeUp 0.4s ease; }
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.greeting { font-size: 1.8rem; margin-bottom: 4px; }
+.sub { color: var(--text-muted); font-size: 0.9rem; }
+
+.addBtn {
+  background: var(--green);
+  color: #000;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 11px 20px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.addBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition);
+}
+.statCard:hover { transform: translateY(-2px); }
+
+.statLabel { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.statValue { font-family: "Syne", sans-serif; font-size: 1.6rem; font-weight: 700; }
+.statIcon { position: absolute; top: 16px; right: 16px; font-size: 1.4rem; opacity: 0.6; }
+
+.incomeCard { border-color: var(--green); }
+.incomeCard .statValue { color: var(--green); }
+.expenseCard { border-color: var(--red); }
+.expenseCard .statValue { color: var(--red); }
+.netPositive .statValue { color: var(--green); }
+.netNegative .statValue { color: var(--red); }
+.streakCard { border-color: var(--yellow); }
+.streakCard .statValue { color: var(--yellow); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.cardHeader h2 { font-size: 1rem; }
+.viewAll { font-size: 0.8rem; color: var(--green); font-weight: 600; transition: opacity var(--transition); }
+.viewAll:hover { opacity: 0.75; }
+
+.empty { text-align: center; padding: 24px 0; color: var(--text-muted); font-size: 0.9rem; }
+.emptyAction { display: block; margin-top: 10px; color: var(--green); font-weight: 600; font-size: 0.875rem; }
+
+/* Categories */
+.categories { display: flex; flex-direction: column; gap: 14px; }
+.catRow { display: flex; align-items: center; gap: 12px; }
+.catLeft { display: flex; align-items: center; gap: 8px; min-width: 120px; }
+.catEmoji { font-size: 1.1rem; }
+.catName { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); text-transform: capitalize; }
+.catRight { flex: 1; display: flex; align-items: center; gap: 10px; }
+.barTrack { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.barFill { height: 100%; background: var(--green); border-radius: 3px; transition: width 0.6s ease; }
+.catAmount { font-size: 0.85rem; font-weight: 600; min-width: 60px; text-align: right; }
+
+/* Transactions */
+.txList { display: flex; flex-direction: column; gap: 12px; }
+.txRow { display: flex; align-items: center; gap: 12px; }
+.txIcon { width: 36px; height: 36px; background: var(--bg); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+.txInfo { flex: 1; min-width: 0; }
+.txDesc { font-size: 0.875rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.txDate { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+.txAmount { font-size: 0.9rem; font-weight: 700; white-space: nowrap; }
+.income { color: var(--green); }
+.expense { color: var(--red); }
+
+/* Goals */
+.goalsList { display: flex; flex-direction: column; gap: 16px; }
+.goalRow {}
+.goalHeader { display: flex; justify-content: space-between; font-size: 0.875rem; font-weight: 600; margin-bottom: 8px; }
+.goalPct { color: var(--green); }
+.goalBar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
+.goalFill { height: 100%; background: linear-gradient(90deg, var(--green), var(--blue)); border-radius: 4px; transition: width 0.6s ease; }
+.goalAmounts { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); }
+.goalTarget { color: var(--text-dim); }
+
+/* AI Card */
+.aiCard {
+  text-align: center;
+  background: linear-gradient(135deg, var(--bg-card) 0%, #0d1a14 100%);
+  border-color: var(--green);
+}
+.aiIcon { font-size: 2.5rem; margin-bottom: 12px; }
+.aiCard h2 { font-size: 1.1rem; margin-bottom: 8px; }
+.aiCard p { color: var(--text-muted); font-size: 0.875rem; line-height: 1.6; margin-bottom: 20px; }
+.aiBtn {
+  display: inline-block;
+  background: var(--green);
+  color: #000;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 11px 22px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+.aiBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+@media (max-width: 1024px) {
+  .statsRow { grid-template-columns: repeat(2, 1fr); }
+  .grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .statsRow { grid-template-columns: repeat(2, 1fr); }
+}

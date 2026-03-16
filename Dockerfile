@@ -2,9 +2,11 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+ENV NEXT_TELEMETRY_DISABLED=1
+
 # Install dependencies
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm ci
 
 # Copy project files
 COPY . .
@@ -18,6 +20,7 @@ WORKDIR /app
 
 # Set production environment
 ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Copy only standalone build output
 COPY --from=builder /app/.next/standalone ./
