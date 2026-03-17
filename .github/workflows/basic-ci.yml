@@ -146,7 +146,7 @@ jobs:
             cat > docker-compose.yml << 'EOF'
             services:
               app:
-                image: ${{ env.IMAGE_NAME }}:latest
+                image: ${{ env.IMAGE_NAME }}:main
                 container_name: brightpath-app
                 ports:
                   - "80:3000"
