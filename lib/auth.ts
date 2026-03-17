@@ -43,11 +43,15 @@ export async function getSession(): Promise<JWTPayload | null> {
 }
 
 export function createAuthCookie(token: string) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const secureByUrl = appUrl.startsWith("https://");
+  const secureByEnv = process.env.COOKIE_SECURE === "true";
+
   return {
     name: TOKEN_NAME,
     value: token,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: secureByEnv || secureByUrl,
     sameSite: "lax" as const,
     maxAge: 60 * 60 * 24 * 7, // 7 days
     path: "/",
