@@ -10,13 +10,17 @@ export async function POST(req: NextRequest) {
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     if (!process.env.OPENAI_API_KEY) {
+      console.warn("OPENAI_API_KEY is missing in environment variables");
       return NextResponse.json(
-        { error: "OPENAI_API_KEY is missing in environment variables" },
-        { status: 500 }
+        { error: "AI service is not configured. Please contact support." },
+        { status: 503 }
       );
     }
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const openai = new OpenAI({ 
+      apiKey: process.env.OPENAI_API_KEY,
+      timeout: 30 * 1000, // 30 second timeout
+    });
 
     const { question } = await req.json();
 
@@ -52,6 +56,8 @@ export async function POST(req: NextRequest) {
         categoryBreakdown[t.category] = (categoryBreakdown[t.category] || 0) + t.amount;
       });
 
+    console.log("Calling OpenAI for insights...", { userName: session.name, model: process.env.OPENAI_MODEL || "gpt-4o-mini" });
+
     const report = await generateRecommendationReport(
       openai,
       {
@@ -65,6 +71,8 @@ export async function POST(req: NextRequest) {
       question || "Give me a recommendation plan based on my recent spending"
     );
 
+    console.log("OpenAI response received successfully");
+
     return NextResponse.json({
       report,
       snapshot: {
@@ -75,11 +83,23 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("Insights error:", error);
-    const message =
-      error?.code === "model_not_found" || error?.status === 403
-        ? "This API key/project does not have access to the configured OpenAI model. Set OPENAI_MODEL to a model your project can use (for example: gpt-4o-mini)."
-        : "AI insights are unavailable right now. Please try again.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("Insights error:", error?.message || error);
+    const status = error?.status;
+    const code = error?.code;
+    
+    let message = "AI insights are unavailable right now. Please try again.";
+    let httpStatus = 500;
+
+    if (code === "model_not_found" || status === 403) {
+      message = "API key does not have access to the configured model. Check OPENAI_API_KEY and OPENAI_MODEL.";
+    } else if (status === 401) {
+      message = "API authentication failed. Check OPENAI_API_KEY.";
+      httpStatus = 401;
+    } else if (error?.message?.includes("timeout") || code === "ERR_HTTP_REQUEST_TIMEOUT") {
+      message = "AI service took too long to respond. Please try again.";
+      httpStatus = 504;
+    }
+
+    return NextResponse.json({ error: message }, { status: httpStatus });
   }
 }

@@ -41,22 +41,35 @@ export default function InsightsPage() {
     setLoading(true);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 35000); // 35 second timeout (+ 5s buffer)
+
       const res = await fetch("/api/insights", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
+
       const data = await res.json().catch(() => null);
 
       if (!res.ok) {
-        setError(data?.error || "Recommendation service is unavailable right now.");
+        const errorMsg = data?.error || `Service error (${res.status})`;
+        setError(errorMsg);
+        console.error("Insights API error:", res.status, errorMsg);
         return;
       }
 
       setReport(data?.report ?? null);
       setSnapshot(data?.snapshot ?? null);
-    } catch {
-      setError("Recommendation service failed. Try again.");
+    } catch (err: any) {
+      const msg = err?.name === "AbortError"
+        ? "Request timed out. The AI service took too long to respond. Try again."
+        : "Network error. Check your connection and try again.";
+      setError(msg);
+      console.error("Insights fetch error:", err?.message || err);
     } finally {
       setLoading(false);
     }
