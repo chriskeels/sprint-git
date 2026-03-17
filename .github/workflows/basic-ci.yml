@@ -161,4 +161,5 @@ jobs:
 
             sudo docker compose pull
             sudo docker compose up -d --remove-orphans
+            sudo docker exec brightpath-app node ./lib/db-init.js
             sudo docker image prune -f
