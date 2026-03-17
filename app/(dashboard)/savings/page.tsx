@@ -20,10 +20,19 @@ export default function SavingsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
   const [depositGoal, setDepositGoal] = useState<Goal | null>(null);
   const [depositAmount, setDepositAmount] = useState("");
   const [form, setForm] = useState({ title: "", target_amount: "", emoji: "🎯", deadline: "" });
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  function resetForm() {
+    setForm({ title: "", target_amount: "", emoji: "🎯", deadline: "" });
+    setEditingGoalId(null);
+    setShowForm(false);
+    setError("");
+  }
 
   const fetchGoals = useCallback(async () => {
     setLoading(true);
@@ -37,20 +46,43 @@ export default function SavingsPage() {
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
+    setError("");
     setSubmitting(true);
-    await fetch("/api/savings-goals", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...form,
-        target_amount: parseFloat(form.target_amount),
-        deadline: form.deadline.trim() === "" ? null : form.deadline,
-      }),
+
+    try {
+      const res = await fetch(editingGoalId ? `/api/savings-goals/${editingGoalId}` : "/api/savings-goals", {
+        method: editingGoalId ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          target_amount: parseFloat(form.target_amount),
+          deadline: form.deadline.trim() === "" ? "" : form.deadline,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || "Could not save this goal.");
+        return;
+      }
+
+      resetForm();
+      fetchGoals();
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function handleEdit(goal: Goal) {
+    setError("");
+    setEditingGoalId(goal.id);
+    setShowForm(true);
+    setForm({
+      title: goal.title,
+      target_amount: goal.target_amount,
+      emoji: goal.emoji,
+      deadline: goal.deadline ? goal.deadline.split("T")[0] : "",
     });
-    setSubmitting(false);
-    setShowForm(false);
-    setForm({ title: "", target_amount: "", emoji: "🎯", deadline: "" });
-    fetchGoals();
   }
 
   async function handleDeposit(e: React.FormEvent) {
@@ -90,7 +122,7 @@ export default function SavingsPage() {
 
       {showForm && (
         <form onSubmit={handleCreate} className={styles.form}>
-          <h2 className={styles.formTitle}>Create a Savings Goal</h2>
+          <h2 className={styles.formTitle}>{editingGoalId ? "Edit Savings Goal" : "Create a Savings Goal"}</h2>
           <div className={styles.emojiPicker}>
             {EMOJIS.map(e => (
               <button
@@ -133,9 +165,15 @@ export default function SavingsPage() {
               />
             </div>
           </div>
-          <button type="submit" className={styles.submitBtn} disabled={submitting}>
-            {submitting ? "Creating..." : "Create Goal 🎯"}
-          </button>
+          {error && <div className={styles.formError}>{error}</div>}
+          <div className={styles.formActions}>
+            <button type="submit" className={styles.submitBtn} disabled={submitting}>
+              {submitting ? "Saving..." : editingGoalId ? "Update Goal 🎯" : "Create Goal 🎯"}
+            </button>
+            {editingGoalId && (
+              <button type="button" onClick={resetForm} className={styles.cancelBtn}>Cancel Edit</button>
+            )}
+          </div>
         </form>
       )}
 
@@ -191,7 +229,10 @@ export default function SavingsPage() {
                     <div key={goal.id} className={styles.goalCard}>
                       <div className={styles.goalTop}>
                         <div className={styles.goalEmoji}>{goal.emoji}</div>
-                        <button onClick={() => handleDelete(goal.id)} className={styles.goalDelete}>✕</button>
+                        <div className={styles.goalActions}>
+                          <button onClick={() => handleEdit(goal)} className={styles.goalEdit}>Edit</button>
+                          <button onClick={() => handleDelete(goal.id)} className={styles.goalDelete}>✕</button>
+                        </div>
                       </div>
                       <h3 className={styles.goalTitle}>{goal.title}</h3>
                       {goal.deadline && (

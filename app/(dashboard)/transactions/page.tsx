@@ -16,6 +16,7 @@ export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [filter, setFilter] = useState({ type: "", month: "", year: new Date().getFullYear().toString() });
   const [form, setForm] = useState({
     amount: "",
@@ -25,6 +26,19 @@ export default function TransactionsPage() {
     date: new Date().toISOString().split("T")[0],
   });
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  function resetForm() {
+    setForm({
+      amount: "",
+      type: "expense",
+      category: "food",
+      description: "",
+      date: new Date().toISOString().split("T")[0],
+    });
+    setEditingId(null);
+    setShowForm(false);
+  }
 
   const fetchTransactions = useCallback(async () => {
     setLoading(true);
@@ -42,16 +56,41 @@ export default function TransactionsPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError("");
     setSubmitting(true);
-    await fetch("/api/transactions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, amount: parseFloat(form.amount) }),
+
+    try {
+      const payload = { ...form, amount: parseFloat(form.amount) };
+      const res = await fetch(editingId ? `/api/transactions/${editingId}` : "/api/transactions", {
+        method: editingId ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || "Could not save the transaction.");
+        return;
+      }
+
+      resetForm();
+      fetchTransactions();
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function handleEdit(tx: Transaction) {
+    setError("");
+    setEditingId(tx.id);
+    setShowForm(true);
+    setForm({
+      amount: tx.amount,
+      type: tx.type,
+      category: tx.category,
+      description: tx.description || "",
+      date: tx.date.split("T")[0],
     });
-    setSubmitting(false);
-    setShowForm(false);
-    setForm({ amount: "", type: "expense", category: "food", description: "", date: new Date().toISOString().split("T")[0] });
-    fetchTransactions();
   }
 
   async function handleDelete(id: string) {
@@ -76,7 +115,7 @@ export default function TransactionsPage() {
 
       {showForm && (
         <form onSubmit={handleSubmit} className={styles.form}>
-          <h2 className={styles.formTitle}>New Transaction</h2>
+          <h2 className={styles.formTitle}>{editingId ? "Edit Transaction" : "New Transaction"}</h2>
           <div className={styles.formGrid}>
             <div className={styles.typeToggle}>
               <button
@@ -133,9 +172,17 @@ export default function TransactionsPage() {
               />
             </div>
           </div>
-          <button type="submit" className={styles.submitBtn} disabled={submitting}>
-            {submitting ? "Saving..." : "Save Transaction ✓"}
-          </button>
+          {error && <div className={styles.formError}>{error}</div>}
+          <div className={styles.formActions}>
+            <button type="submit" className={styles.submitBtn} disabled={submitting}>
+              {submitting ? "Saving..." : editingId ? "Update Transaction ✓" : "Save Transaction ✓"}
+            </button>
+            {editingId && (
+              <button type="button" className={styles.cancelBtn} onClick={resetForm}>
+                Cancel Edit
+              </button>
+            )}
+          </div>
         </form>
       )}
 
@@ -187,7 +234,10 @@ export default function TransactionsPage() {
               <p className={`${styles.amount} ${tx.type === "income" ? styles.income : styles.expense}`}>
                 {tx.type === "income" ? "+" : "-"}{formatCurrency(parseFloat(tx.amount))}
               </p>
-              <button onClick={() => handleDelete(tx.id)} className={styles.deleteBtn} title="Delete">✕</button>
+              <div className={styles.rowActions}>
+                <button onClick={() => handleEdit(tx)} className={styles.editBtn} title="Edit">Edit</button>
+                <button onClick={() => handleDelete(tx.id)} className={styles.deleteBtn} title="Delete">✕</button>
+              </div>
             </div>
           ))}
         </div>

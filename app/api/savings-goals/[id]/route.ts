@@ -16,8 +16,10 @@ export async function PATCH(
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const { current_amount, title, target_amount, emoji, deadline } = await req.json();
+  const body = await req.json();
+  const { current_amount, title, target_amount, emoji, deadline } = body;
   const normalizedDeadline = normalizeOptionalDate(deadline);
+  const deadlineProvided = Object.prototype.hasOwnProperty.call(body, "deadline");
 
   const goal = await queryOne(
     `UPDATE savings_goals SET
@@ -25,11 +27,14 @@ export async function PATCH(
        title = COALESCE($2, title),
        target_amount = COALESCE($3, target_amount),
        emoji = COALESCE($4, emoji),
-       deadline = COALESCE($5, deadline),
-       is_completed = CASE WHEN COALESCE($1, current_amount) >= target_amount THEN TRUE ELSE FALSE END,
+       deadline = CASE WHEN $8 THEN $5 ELSE deadline END,
+       is_completed = CASE
+         WHEN COALESCE($1, current_amount) >= COALESCE($3, target_amount) THEN TRUE
+         ELSE FALSE
+       END,
        updated_at = NOW()
      WHERE id = $6 AND user_id = $7 RETURNING *`,
-    [current_amount, title, target_amount, emoji, normalizedDeadline, id, session.userId]
+    [current_amount, title, target_amount, emoji, normalizedDeadline, id, session.userId, deadlineProvided]
   );
 
   if (!goal) return NextResponse.json({ error: "Not found" }, { status: 404 });

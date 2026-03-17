@@ -26,6 +26,18 @@
 .submitBtn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
 .submitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+.formActions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.formError {
+	margin-bottom: 14px;
+	padding: 10px 12px;
+	border-radius: var(--radius-sm);
+	background: var(--red-dim);
+	color: var(--red);
+	border: 1px solid rgba(255, 91, 91, 0.25);
+	font-size: 0.875rem;
+}
+
 .goalsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 32px; }
 
 .goalCard { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; transition: all var(--transition); }
@@ -34,6 +46,9 @@
 
 .goalTop { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .goalEmoji { font-size: 2rem; }
+.goalActions { display: flex; align-items: center; gap: 8px; }
+.goalEdit { background: transparent; color: var(--text-dim); border: 1px solid var(--border); font-size: 0.8rem; padding: 4px 8px; border-radius: 6px; transition: all var(--transition); cursor: pointer; }
+.goalEdit:hover { background: var(--bg); color: var(--text); border-color: var(--border-light); }
 .goalDelete { background: transparent; color: var(--text-dim); font-size: 0.85rem; padding: 4px 8px; border-radius: 6px; transition: all var(--transition); cursor: pointer; }
 .goalDelete:hover { background: var(--red-dim); color: var(--red); }
 .completedBadge { background: var(--green-dim); color: var(--green); font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 100px; }
