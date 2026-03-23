@@ -28,9 +28,9 @@ jobs:
     env:
       DATABASE_URL: postgres://brightpath_user:brightpath_password@localhost:5432/brightpath_db
       JWT_SECRET: ci-jwt-secret
-      OPENAI_API_KEY: ci-placeholder-key
-      OPENAI_MODEL: gpt-4o-mini
       NEXT_TELEMETRY_DISABLED: "1"
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
     services:
       postgres:
         image: postgres:15
@@ -160,9 +160,9 @@ jobs:
                 environment:
                   DATABASE_URL: ${{ secrets.DATABASE_URL }}
                   JWT_SECRET: ${{ secrets.JWT_SECRET }}
-                  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-                  OPENAI_MODEL: gpt-4o-mini
                   NODE_ENV: production
+                  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+                  OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
                 restart: always
             EOF
 

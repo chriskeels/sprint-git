@@ -118,6 +118,9 @@
   text-align: center;
   background: linear-gradient(135deg, var(--bg-card) 0%, #0d1a14 100%);
   border-color: var(--green);
+  grid-column: 1 / -1;
+  width: min(100%, 720px);
+  justify-self: center;
 }
 .aiIcon { font-size: 2.5rem; margin-bottom: 12px; }
 .aiCard h2 { font-size: 1.1rem; margin-bottom: 8px; }
@@ -137,6 +140,7 @@
 @media (max-width: 1024px) {
   .statsRow { grid-template-columns: repeat(2, 1fr); }
   .grid { grid-template-columns: 1fr; }
+  .aiCard { width: 100%; }
 }
 @media (max-width: 640px) {
   .statsRow { grid-template-columns: repeat(2, 1fr); }

@@ -11,7 +11,7 @@ const NAV = [
   { href: "/dashboard", icon: "⚡", label: "Dashboard" },
   { href: "/transactions", icon: "💳", label: "Transactions" },
   { href: "/savings", icon: "🎯", label: "Savings Goals" },
-  { href: "/insights", icon: "🤖", label: "AI Insights" },
+  { href: "/insights", icon: "🤖", label: "Insights" },
 ];
 
 export default function Sidebar({ user }: Props) {

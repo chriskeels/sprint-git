@@ -1,6 +1,6 @@
 import { getSession } from "@/lib/auth";
 import { query, queryOne } from "@/lib/db";
-import { formatCurrency, getCategoryEmoji } from "@/lib/utils";
+import { formatCurrency, getCategoryEmoji, getCategoryLabel } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import RiskRadarPanel from "@/components/insights/RiskRadarPanel";
@@ -128,7 +128,7 @@ export default async function DashboardPage() {
                   <div key={cat.category} className={styles.catRow}>
                     <div className={styles.catLeft}>
                       <span className={styles.catEmoji}>{getCategoryEmoji(cat.category)}</span>
-                      <span className={styles.catName}>{cat.category}</span>
+                      <span className={styles.catName}>{getCategoryLabel(cat.category)}</span>
                     </div>
                     <div className={styles.catRight}>
                       <div className={styles.barTrack}>
@@ -160,7 +160,7 @@ export default async function DashboardPage() {
                 <div key={tx.id} className={styles.txRow}>
                   <div className={styles.txIcon}>{getCategoryEmoji(tx.category)}</div>
                   <div className={styles.txInfo}>
-                    <p className={styles.txDesc}>{tx.description || tx.category}</p>
+                    <p className={styles.txDesc}>{tx.description || getCategoryLabel(tx.category)}</p>
                     <p className={styles.txDate}>
                       {new Date(tx.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     </p>
@@ -209,12 +209,12 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* AI Nudge */}
+        {/* Insights Nudge */}
         <div className={`${styles.card} ${styles.aiCard}`}>
-          <div className={styles.aiIcon}>🤖</div>
-          <h2>Get AI Insights</h2>
-          <p>Ask StackUp about your spending habits, savings tips, or how to hit your goals faster.</p>
-          <Link href="/insights" className={styles.aiBtn}>Chat with StackUp AI →</Link>
+          <div className={styles.aiIcon}>📊</div>
+          <h2>Get Spending Insights</h2>
+          <p>See your smart budget targets and recurring expense patterns in one focused view.</p>
+          <Link href="/insights" className={styles.aiBtn}>Open Insights →</Link>
         </div>
       </div>
     </div>

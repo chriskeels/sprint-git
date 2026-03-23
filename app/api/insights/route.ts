@@ -396,15 +396,77 @@ function buildRiskRadar(
 function buildBehaviorTriggers(transactions: SpendingTx[], now: Date): BehaviorTrigger[] {
   const triggers: BehaviorTrigger[] = [];
   const expenseTx = transactions.filter((tx) => tx.type === "expense");
+  const incomeTx = transactions.filter((tx) => tx.type === "income");
 
-  // Weekend vs weekday
+  if (expenseTx.length === 0) return triggers;
+
+  const totalExp = expenseTx.reduce((s, t) => s + t.amount, 0);
+  const totalInc = incomeTx.reduce((s, t) => s + t.amount, 0);
+
+  // Category totals (shared across multiple checks)
+  const catTotals: Record<string, number> = {};
+  for (const tx of expenseTx) catTotals[tx.category] = (catTotals[tx.category] || 0) + tx.amount;
+  const sortedCats = Object.entries(catTotals).sort(([, a], [, b]) => b - a);
+  const topEntry = sortedCats[0];
+
+  // 1. Income vs expense ratio — always fires if there is income and expenses
+  if (totalInc > 0) {
+    const spendRatio = totalExp / totalInc;
+    const savingsAmt = totalInc - totalExp;
+    const savingsPct = Math.max(0, Math.round((1 - spendRatio) * 100));
+    const spendPct = Math.round(spendRatio * 100);
+    const isHealthy = savingsPct >= 20;
+    triggers.push({
+      pattern: `Spending ${spendPct}% of income this period`,
+      detail: isHealthy
+        ? `$${totalExp.toFixed(2)} spent against $${totalInc.toFixed(2)} earned — $${savingsAmt.toFixed(2)} (${savingsPct}%) available for savings. Solid position.`
+        : `$${totalExp.toFixed(2)} spent against $${totalInc.toFixed(2)} earned — only ${savingsPct}% ($${savingsAmt.toFixed(2)}) left for savings. High spend-to-income ratios leave no cushion for surprises.`,
+      totalImpact: totalExp,
+      rule: isHealthy
+        ? "Keep it up — direct that surplus to savings goals or an emergency fund before it gets spent."
+        : "Automate a savings transfer on payday. Even $20/paycheck builds a buffer over time.",
+      icon: "⚖️",
+    });
+  }
+
+  // 2. Single category dominance (lowered threshold: 45% → 35%)
+  if (topEntry && totalExp > 0 && topEntry[1] / totalExp > 0.35) {
+    const [topCat, topTotal] = topEntry;
+    const topCatLabel = categoryLabel(topCat);
+    const pct = Math.round((topTotal / totalExp) * 100);
+    triggers.push({
+      pattern: `${topCatLabel} is ${pct}% of all spending`,
+      detail: `$${topTotal.toFixed(2)} of your $${totalExp.toFixed(2)} total goes to ${topCatLabel}. One category concentrating this much spend is a fragility risk — one bad week there breaks your whole budget.`,
+      totalImpact: topTotal,
+      rule: `Set a firm monthly cap for ${topCatLabel}. Treat it as fully spent once you hit it — no exceptions.`,
+      icon: "📊",
+    });
+  }
+
+  // 3. Largest single transaction (fires if > 15% of total and not already covered by the dominance trigger above)
+  const sortedByAmount = [...expenseTx].sort((a, b) => b.amount - a.amount);
+  const biggestTx = sortedByAmount[0];
+  const dominantCat = topEntry && topEntry[1] / totalExp > 0.35 ? topEntry[0] : null;
+  if (biggestTx && biggestTx.amount / totalExp > 0.15 && biggestTx.category !== dominantCat) {
+    const pct = Math.round((biggestTx.amount / totalExp) * 100);
+    const txName = biggestTx.description || categoryLabel(biggestTx.category);
+    triggers.push({
+      pattern: `Largest expense: "${txName}" — ${pct}% of total`,
+      detail: `At $${biggestTx.amount.toFixed(2)}, this single transaction was your biggest spend this period. Large one-offs can mask your true baseline spending.`,
+      totalImpact: biggestTx.amount,
+      rule: "Before any unplanned purchase over $50, apply the 24-hour rule: wait a full day before buying.",
+      icon: "💸",
+    });
+  }
+
+  // 4. Weekend vs weekday spending spike (lowered: >= 3 → >= 2, ratio 1.5 → 1.4)
   const weekendTx = expenseTx.filter((tx) => { const d = new Date(tx.date).getDay(); return d === 0 || d === 6; });
   const weekdayTx = expenseTx.filter((tx) => { const d = new Date(tx.date).getDay(); return d >= 1 && d <= 5; });
   const weekendTotal = weekendTx.reduce((s, t) => s + t.amount, 0);
   const weekdayTotal = weekdayTx.reduce((s, t) => s + t.amount, 0);
   const weekendPerDay = weekendTotal / 2;
   const weekdayPerDay = weekdayTotal / 5;
-  if (weekendTx.length >= 3 && weekdayPerDay > 0 && weekendPerDay > weekdayPerDay * 1.5) {
+  if (weekendTx.length >= 2 && weekdayPerDay > 0 && weekendPerDay > weekdayPerDay * 1.4) {
     triggers.push({
       pattern: "Weekend spending spike",
       detail: `You spend ${((weekendPerDay / weekdayPerDay - 1) * 100).toFixed(0)}% more per day on weekends ($${weekendPerDay.toFixed(2)}/day) vs weekdays ($${weekdayPerDay.toFixed(2)}/day). Most of it likely isn't planned.`,
@@ -414,7 +476,7 @@ function buildBehaviorTriggers(transactions: SpendingTx[], now: Date): BehaviorT
     });
   }
 
-  // Frequent small purchases accumulating
+  // 5. Frequent small purchases accumulating (lowered: >= 5 → >= 3)
   const smallByCategory: Record<string, number[]> = {};
   for (const tx of expenseTx) {
     if (tx.amount < 20) {
@@ -424,19 +486,20 @@ function buildBehaviorTriggers(transactions: SpendingTx[], now: Date): BehaviorT
   }
   const topSmallEntry = Object.entries(smallByCategory)
     .sort(([, a], [, b]) => b.reduce((s, x) => s + x, 0) - a.reduce((s, x) => s + x, 0))[0];
-  if (topSmallEntry && topSmallEntry[1].length >= 5) {
+  if (topSmallEntry && topSmallEntry[1].length >= 3) {
     const [cat, amounts] = topSmallEntry;
+    const catLabel = categoryLabel(cat);
     const total = amounts.reduce((s, x) => s + x, 0);
     triggers.push({
-      pattern: `Frequent small purchases in "${cat}"`,
-      detail: `${amounts.length} transactions under $20 in ${cat} added up to $${total.toFixed(2)}. Each one feels harmless — together they're one of your biggest costs.`,
+      pattern: `Frequent small purchases in ${catLabel}`,
+      detail: `${amounts.length} transactions under $20 in ${catLabel} added up to $${total.toFixed(2)}. Each one feels harmless — together they're one of your biggest costs.`,
       totalImpact: total,
       rule: "Apply a 3-purchase weekly limit in this category. After the 3rd, wait until next week.",
       icon: "🪙",
     });
   }
 
-  // Month-end spending acceleration
+  // 6. Month-end spending acceleration (lowered: >= 3 → >= 2, ratio 1.4 → 1.3)
   const lastWeekTx = expenseTx.filter((tx) => {
     const daysAgo = Math.floor((now.getTime() - new Date(tx.date).getTime()) / (1000 * 60 * 60 * 24));
     return daysAgo <= 7;
@@ -447,7 +510,7 @@ function buildBehaviorTriggers(transactions: SpendingTx[], now: Date): BehaviorT
   });
   const lastWeekPerDay = lastWeekTx.reduce((s, t) => s + t.amount, 0) / 7;
   const earlierPerDay = earlierTx.length > 0 ? earlierTx.reduce((s, t) => s + t.amount, 0) / 23 : 0;
-  if (lastWeekTx.length >= 3 && earlierPerDay > 0 && lastWeekPerDay > earlierPerDay * 1.4) {
+  if (lastWeekTx.length >= 2 && earlierPerDay > 0 && lastWeekPerDay > earlierPerDay * 1.3) {
     triggers.push({
       pattern: "Spending accelerates near month-end",
       detail: `Last 7 days: $${lastWeekPerDay.toFixed(2)}/day vs $${earlierPerDay.toFixed(2)}/day earlier — a ${((lastWeekPerDay / earlierPerDay - 1) * 100).toFixed(0)}% spike. Often caused by "I've already blown the budget" thinking.`,
@@ -457,24 +520,7 @@ function buildBehaviorTriggers(transactions: SpendingTx[], now: Date): BehaviorT
     });
   }
 
-  // Single category dominance
-  const catTotals: Record<string, number> = {};
-  for (const tx of expenseTx) catTotals[tx.category] = (catTotals[tx.category] || 0) + tx.amount;
-  const totalExp = expenseTx.reduce((s, t) => s + t.amount, 0);
-  const topEntry = Object.entries(catTotals).sort(([, a], [, b]) => b - a)[0];
-  if (topEntry && totalExp > 0 && topEntry[1] / totalExp > 0.45) {
-    const [topCat, topTotal] = topEntry;
-    const pct = Math.round((topTotal / totalExp) * 100);
-    triggers.push({
-      pattern: `${topCat} is ${pct}% of all spending`,
-      detail: `$${topTotal.toFixed(2)} of your $${totalExp.toFixed(2)} total goes to ${topCat}. One category concentrating this much spend is a fragility risk — one bad week there breaks your whole budget.`,
-      totalImpact: topTotal,
-      rule: `Set a firm monthly cap for ${topCat}. Treat it as fully spent once you hit it — no exceptions.`,
-      icon: "📊",
-    });
-  }
-
-  return triggers.slice(0, 3);
+  return triggers.slice(0, 4);
 }
 
 function buildGoalRouteOptimizer(
@@ -718,12 +764,10 @@ export async function POST(req: NextRequest) {
         apiKey: process.env.OPENAI_API_KEY,
         timeout: 30 * 1000,
       });
-
       console.log("Calling OpenAI for insights...", {
         userName: session.name,
         model: process.env.OPENAI_MODEL || "gpt-4o-mini",
       });
-
       try {
         report = await generateRecommendationReport(
           openai,
@@ -770,7 +814,7 @@ export async function POST(req: NextRequest) {
     console.error("Insights error:", error?.message || error);
     const status = error?.status;
     const code = error?.code;
-    
+
     let message = "AI insights are unavailable right now. Please try again.";
     let httpStatus = 500;
 
