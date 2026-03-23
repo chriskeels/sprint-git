@@ -3,6 +3,7 @@ import { query, queryOne } from "@/lib/db";
 import { formatCurrency, getCategoryEmoji } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import RiskRadarPanel from "@/components/insights/RiskRadarPanel";
 import styles from "./page.module.css";
 
 type DashboardData = {
@@ -104,6 +105,10 @@ export default async function DashboardPage() {
       </div>
 
       <div className={styles.grid}>
+        <div className={styles.card}>
+          <RiskRadarPanel />
+        </div>
+
         {/* Top Spending Categories */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>

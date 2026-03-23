@@ -7,6 +7,8 @@ on:
     branches: [main, develop]
   workflow_dispatch:
 
+# Use a concurrency group to ensure only one workflow runs per branch at a time
+# and cancel any in-progress runs when a new commit is pushed.
 concurrency:
   group: app-ci-cd-${{ github.ref }}
   cancel-in-progress: true
@@ -16,7 +18,10 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ghcr.io/${{ github.repository }}
 
+  # Three Jobs in this workflow:
+  # Validate, Publish Image, Deploy
 jobs:
+  # Validation job runs on every push and PR, and ensures the app builds correctly and the Docker configuration is valid.
   validate:
     name: Validate application
     runs-on: ubuntu-latest
@@ -68,6 +73,7 @@ jobs:
       - name: Build Docker image
         run: docker build --tag stackup-app:${{ github.sha }} .
 
+  # Only works if validation passes, and only on develop or main branches (not on PRs)
   publish-image:
     name: Publish container image
     needs: validate
@@ -112,6 +118,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  
   deploy:
     name: Deploy to EC2
     needs: publish-image

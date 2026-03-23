@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { formatCurrency } from "@/lib/utils";
+import GoalRoutePanel from "@/components/insights/GoalRoutePanel";
 import styles from "./page.module.css";
 
 interface Goal {
@@ -176,6 +177,10 @@ export default function SavingsPage() {
           </div>
         </form>
       )}
+
+      <div className={styles.featurePanel}>
+        <GoalRoutePanel />
+      </div>
 
       {/* Deposit Modal */}
       {depositGoal && (

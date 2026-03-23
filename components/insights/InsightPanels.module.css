@@ -1,0 +1,124 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.panelHeader h3 {
+  font-size: 1rem;
+}
+
+.panelHeader span {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rowCard {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rowTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.rowTop strong {
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.rowCard p {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.rowCard small {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.45;
+}
+
+.rowCard small span {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.empty {
+  background: var(--bg);
+  border: 1px dashed var(--border-light);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+
+.pill,
+.softTag {
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.pill {
+  text-transform: uppercase;
+}
+
+.softTag {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.high {
+  background: var(--red-dim);
+  color: var(--red);
+}
+
+.medium {
+  background: rgba(255, 196, 0, 0.12);
+  color: #ffcc4d;
+}
+
+.low {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.progressWrap {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--green);
+  border-radius: 999px;
+  min-width: 4px;
+}

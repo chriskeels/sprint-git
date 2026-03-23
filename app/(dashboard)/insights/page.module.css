@@ -177,6 +177,166 @@
   font-size: 1rem;
 }
 
+.sectionBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sectionHeader h3 {
+  font-size: 1rem;
+}
+
+.sectionHeader span {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.actionGrid,
+.insightGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.actionCard,
+.metricCard {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.actionCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.actionIcon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.actionTag {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.actionCard strong,
+.metricCard strong {
+  display: block;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.actionCard p,
+.metricCard p {
+  color: var(--text-muted);
+  line-height: 1.55;
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+.metricTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.pill {
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.high {
+  background: var(--red-dim);
+  color: var(--red);
+}
+
+.medium {
+  background: rgba(255, 196, 0, 0.12);
+  color: #ffcc4d;
+}
+
+.low {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.emptyMini {
+  background: var(--bg);
+  border: 1px dashed var(--border-light);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.triggerRule {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.triggerRule span {
+  color: var(--green);
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.progressBarWrap {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 4px 0;
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--green);
+  border-radius: 999px;
+  min-width: 4px;
+  transition: width 0.6s ease;
+}
+
+.daysTag {
+  font-size: 0.78rem !important;
+  color: var(--text-dim) !important;
+  font-weight: 600;
+}
+
 .recoSection {
   background: var(--bg);
   border: 1px solid var(--border);

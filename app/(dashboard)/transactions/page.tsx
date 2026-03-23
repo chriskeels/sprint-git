@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { formatCurrency, getCategoryEmoji, getCategoryLabel, CATEGORIES } from "@/lib/utils";
+import BehaviorTriggersPanel from "@/components/insights/BehaviorTriggersPanel";
 import styles from "./page.module.css";
 
 interface Transaction {
@@ -204,6 +205,10 @@ export default function TransactionsPage() {
         <select value={filter.year} onChange={e => setFilter({ ...filter, year: e.target.value })} className={styles.filterSelect}>
           {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
         </select>
+      </div>
+
+      <div className={styles.featurePanel}>
+        <BehaviorTriggersPanel />
       </div>
 
       {/* Transaction List */}
