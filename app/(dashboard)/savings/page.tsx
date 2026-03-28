@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { formatCurrency } from "@/lib/utils";
 import GoalRoutePanel from "@/components/insights/GoalRoutePanel";
 import styles from "./page.module.css";
@@ -18,6 +18,7 @@ interface Goal {
 const EMOJIS = ["🎯", "👟", "💻", "✈️", "🎮", "🎓", "🏠", "🚗", "💍", "🎸", "📱", "💪"];
 
 export default function SavingsPage() {
+  const formRef = useRef<HTMLFormElement | null>(null);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -44,6 +45,12 @@ export default function SavingsPage() {
   }, []);
 
   useEffect(() => { fetchGoals(); }, [fetchGoals]);
+
+  useEffect(() => {
+    if (showForm && formRef.current) {
+      formRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [showForm, editingGoalId]);
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -116,13 +123,13 @@ export default function SavingsPage() {
           <h1>Savings Goals 🎯</h1>
           <p className={styles.sub}>Stack your wins, one goal at a time</p>
         </div>
-        <button onClick={() => setShowForm(!showForm)} className={styles.addBtn}>
+        <button type="button" onClick={() => setShowForm(!showForm)} className={styles.addBtn}>
           {showForm ? "✕ Cancel" : "+ New Goal"}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleCreate} className={styles.form}>
+        <form ref={formRef} onSubmit={handleCreate} className={styles.form}>
           <h2 className={styles.formTitle}>{editingGoalId ? "Edit Savings Goal" : "Create a Savings Goal"}</h2>
           <div className={styles.emojiPicker}>
             {EMOJIS.map(e => (
@@ -235,8 +242,8 @@ export default function SavingsPage() {
                       <div className={styles.goalTop}>
                         <div className={styles.goalEmoji}>{goal.emoji}</div>
                         <div className={styles.goalActions}>
-                          <button onClick={() => handleEdit(goal)} className={styles.goalEdit}>Edit</button>
-                          <button onClick={() => handleDelete(goal.id)} className={styles.goalDelete}>✕</button>
+                          <button type="button" onClick={() => handleEdit(goal)} className={styles.goalEdit}>Edit</button>
+                          <button type="button" onClick={() => handleDelete(goal.id)} className={styles.goalDelete}>✕</button>
                         </div>
                       </div>
                       <h3 className={styles.goalTitle}>{goal.title}</h3>
@@ -256,7 +263,7 @@ export default function SavingsPage() {
                       <p className={styles.goalRemaining}>
                         {formatCurrency(remaining)} left to go
                       </p>
-                      <button onClick={() => setDepositGoal(goal)} className={styles.depositGoalBtn}>
+                      <button type="button" onClick={() => setDepositGoal(goal)} className={styles.depositGoalBtn}>
                         + Add Money
                       </button>
                     </div>

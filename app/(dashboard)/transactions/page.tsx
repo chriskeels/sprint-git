@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { formatCurrency, getCategoryEmoji, getCategoryLabel, CATEGORIES } from "@/lib/utils";
 import BehaviorTriggersPanel from "@/components/insights/BehaviorTriggersPanel";
 import styles from "./page.module.css";
@@ -14,6 +14,7 @@ interface Transaction {
 }
 
 export default function TransactionsPage() {
+  const formRef = useRef<HTMLFormElement | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -54,6 +55,12 @@ export default function TransactionsPage() {
   }, [filter]);
 
   useEffect(() => { fetchTransactions(); }, [fetchTransactions]);
+
+  useEffect(() => {
+    if (showForm && formRef.current) {
+      formRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [showForm, editingId]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -109,13 +116,13 @@ export default function TransactionsPage() {
           <h1>Transactions 💳</h1>
           <p className={styles.sub}>Every dollar in and out</p>
         </div>
-        <button onClick={() => setShowForm(!showForm)} className={styles.addBtn}>
+        <button type="button" onClick={() => setShowForm(!showForm)} className={styles.addBtn}>
           {showForm ? "✕ Cancel" : "+ Add Transaction"}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form ref={formRef} onSubmit={handleSubmit} className={styles.form}>
           <h2 className={styles.formTitle}>{editingId ? "Edit Transaction" : "New Transaction"}</h2>
           <div className={styles.formGrid}>
             <div className={styles.typeToggle}>
@@ -240,8 +247,8 @@ export default function TransactionsPage() {
                 {tx.type === "income" ? "+" : "-"}{formatCurrency(parseFloat(tx.amount))}
               </p>
               <div className={styles.rowActions}>
-                <button onClick={() => handleEdit(tx)} className={styles.editBtn} title="Edit">Edit</button>
-                <button onClick={() => handleDelete(tx.id)} className={styles.deleteBtn} title="Delete">✕</button>
+                <button type="button" onClick={() => handleEdit(tx)} className={styles.editBtn} title="Edit">Edit</button>
+                <button type="button" onClick={() => handleDelete(tx.id)} className={styles.deleteBtn} title="Delete">✕</button>
               </div>
             </div>
           ))}

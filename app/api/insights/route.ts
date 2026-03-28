@@ -82,7 +82,7 @@ type GoalAllocation = {
 };
 
 function resolveDisplayName(category: string, transactions: SpendingTx[]): string {
-  if (category.toLowerCase() !== "other") return category;
+  if (category.toLowerCase() !== "other") return categoryLabel(category);
   // Sum amounts per description for 'other' category transactions
   const totals = new Map<string, number>();
   for (const tx of transactions) {
@@ -97,7 +97,12 @@ function resolveDisplayName(category: string, transactions: SpendingTx[]): strin
 }
 
 function categoryLabel(category: string): string {
-  return category.toLowerCase() === "other" ? "Other" : category;
+  return category
+    .replace(/[_-]+/g, " ")
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
 }
 
 function startOfDay(date: Date) {
